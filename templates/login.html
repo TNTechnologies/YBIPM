@@ -1,0 +1,19 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block content %}
+<h1> Sign In</h1>
+<form  method="post">
+        {{  form.csrf_token }}
+    <div class="form-group">
+        {{form.name.label}}
+        {{form.name(size=32)}}
+    </div>
+    <div class="form-group">
+        {{form.password.label}}
+        {{form.password(size=32)}}
+    </div>
+        {{ form.submit() }}
+</form>
+{% endblock %}
+
+
