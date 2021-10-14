@@ -5,11 +5,8 @@ from flask_nav import Nav
 from forms import LoginForm
 from models import *
 from flask_sqlalchemy import SQLAlchemy
-from flask_admin import Admin
-from flask_admin.contrib import sqla as flask_admin_sqla
-from flask_admin import AdminIndexView
-from flask_admin import expose
-from flask_admin.menu import MenuLink
+
+
 
 app = Flask(__name__)
 nav = Nav(app)
