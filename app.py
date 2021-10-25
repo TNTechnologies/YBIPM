@@ -73,7 +73,7 @@ class Users(UserMixin, db.Model):
 #init_app
 @login_manager.user_loader
 def load_user(id):
-    return Users.get(int(id))
+    return Users.query.get(id)
 
 if __name__ == '__main__':
     db.init_app(app)
