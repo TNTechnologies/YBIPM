@@ -1,13 +1,18 @@
 from dominate.util import lazy
 from flask import Flask, render_template, redirect, flash, url_for, request
 from flask_bootstrap import Bootstrap
-from flask_login import LoginManager, login_user, current_user, logout_user
+from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from flask_nav import Nav
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship, backref
+
 from forms import LoginForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 
 
 app = Flask(__name__)
@@ -20,6 +25,7 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
+admin = Admin(app, name='PMDatabase', template_mode='bootstrap3')
 
 
 @app.route('/')
@@ -45,8 +51,9 @@ def login():
 class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False, unique=True)
-    password_hash = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
+    password_hash = db.Column(db.String(255), nullable=False)
+
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -69,11 +76,81 @@ class Users(UserMixin, db.Model):
     def __repr__(self):
         return '<Users %r>' % self.id
 
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.Text(40))
+    description = db.Column(db.Text(100))
+    pm_interval = db.Column(db.Integer)
+    assets = db.relationship("Asset", backref='category')
+
+
+class Asset(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    serial_number = db.Column(db.Text(10))
+    next_pm = db.Column(db.DateTime, default=datetime.datetime.now)
+    description = db.Column(db.Text(40))
+    active = db.Column(db.Boolean, default=True)
+    notes = db.Column(db.Text(255))
+    category_id = db.Column(db.Integer, db.ForeignKey("category.id"))
+    failures = db.relationship('Failure', backref='asset')
+    repairs = db.relationship('Repair', backref='asset')
+    pms = db.relationship('PM', backref='asset')
+
+    def __repr__(self):
+        return '<Asset %r>' % self.id
+
+class Failure(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    asset_id = db.Column(db.Integer, db.ForeignKey("asset.id"))
+    date = db.Column(db.DateTime, default=datetime.datetime.now)
+    reported_by = db.Column(db.Text(20))
+    description = db.Column(db.Text(100), nullable=False)
+    notes = db.Column(db.Text(1024))
+    completed = db.Column(db.Boolean)
+    repairs = db.relationship('Repair', backref='failure')
+
+    def __repr__(self):
+        return '<Failure %r' % self.id
+
+class Repair(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey("failure.id"))
+    date = db.Column(db.DateTime, default=datetime.datetime.now)
+    repaired_by = db.Column(db.Text(20))
+    description = db.Column(db.Text(100))
+    notes = db.Column(db.Text(1024))
+    completed = db.Column(db.Boolean)
+
+    def __repr__(self):
+        return '<Repair %r>' % self.id
+
+class PM(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
+    date = db.Column(db.DateTime, default=datetime.datetime.now)
+    performed_by = db.Column(db.Text(20))
+    description = db.Column(db.Text(100))
+    notes = db.Column(db.Text(1024))
+
+    def __repr__(self):
+        return '<PM %r>' % self.id
+
+
+
 
 #init_app
 @login_manager.user_loader
 def load_user(id):
     return Users.query.get(id)
+
+#@login_required
+admin.add_view(ModelView(Users, db.session))
+admin.add_view(ModelView(Category, db.session))
+admin.add_view(ModelView(Asset, db.session))
+admin.add_view(ModelView(Failure, db.session))
+admin.add_view(ModelView(Repair, db.session))
+admin.add_view(ModelView(PM, db.session))
 
 if __name__ == '__main__':
     db.init_app(app)
