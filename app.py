@@ -29,6 +29,7 @@ login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 admin = Admin(app, name='YBI Geo Admin', template_mode='bootstrap3')
 
+#Navbar
 @nav.navigation()
 def ybinavbar():
     return Navbar(
@@ -37,13 +38,15 @@ def ybinavbar():
 
     )
 
+
+#Routes
 @app.route('/')
 @login_required
 def index():  # put application's code here
-    category = Category()
-    return render_template('index.html')
-
-
+    tools = Category.query.filter_by(type='Tool').all()
+    equipment = Category.query.filter_by(type='Equipment').all()
+    trucks = Category.query.filter_by(type='Truck').all()
+    return render_template('index.html', tools=tools, equipment=equipment, trucks=trucks)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -68,9 +71,6 @@ def logout():
 @login_required
 def failure():
     return render_template('failure_report.html')
-
-
-
 
 
 # Database models

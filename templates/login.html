@@ -2,13 +2,15 @@
 
 {% block content %}
 <h1> Sign In</h1>
+    {% with messages = get_flashed_messages() %}
     {% if messages %}
-        <u1 class=flashes>
-            {% for messages in messages %}
-                <li>{{ message }}</li>
+            {% for message in messages %}
+               <div class="alert alert-danger" role="alert">
+                  {{ message }}
+               </div>
             {% endfor %}
-        </u1>
     {% endif %}
+    {% endwith %}
 
 <form  method="post">
         {{  form.csrf_token }}
