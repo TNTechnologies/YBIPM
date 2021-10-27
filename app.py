@@ -1,9 +1,11 @@
+import flask_sqlalchemy
 from dominate.util import lazy
 from flask import Flask, render_template, redirect, flash, url_for, request
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from flask_nav import Nav
-from sqlalchemy import ForeignKey
+from flask_nav.elements import Navbar, View
+from sqlalchemy import ForeignKey, false
 from sqlalchemy.orm import relationship, backref
 
 from forms import LoginForm
@@ -25,15 +27,24 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
-admin = Admin(app, name='PMDatabase', template_mode='bootstrap3')
+admin = Admin(app, name='YBI Geo Admin', template_mode='bootstrap3')
 
+@nav.navigation()
+def ybinavbar():
+    return Navbar(
+        'YBI Geo',
+        View('Home', 'index')
+
+    )
 
 @app.route('/')
+@login_required
 def index():  # put application's code here
+    category = Category()
     return render_template('index.html')
 
 
-# TODO: Setup Flask Login
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -46,6 +57,21 @@ def login():
         return redirect(url_for('index'))
 
     return render_template('login.html', form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+@app.route('/failure')
+@login_required
+def failure():
+    return render_template('failure_report.html')
+
+
+
+
 
 # Database models
 class Users(UserMixin, db.Model):
@@ -73,16 +99,19 @@ class Users(UserMixin, db.Model):
     def get_id(self):
         return self.id
 
+    def __unicode__(self):
+        return self.username
+
     def __repr__(self):
         return '<Users %r>' % self.id
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.Text(40))
+    name = db.Column(db.Text(40), nullable=False)
     description = db.Column(db.Text(100))
+    type = db.Column(db.Text(20))
     pm_interval = db.Column(db.Integer)
     assets = db.relationship("Asset", backref='category')
-
 
 class Asset(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -137,22 +166,66 @@ class PM(db.Model):
         return '<PM %r>' % self.id
 
 
+#Admin View modules
+class UserView(ModelView):
 
+    def is_accessible(self):
+        return current_user.is_authenticated
 
-#init_app
+    can_delete = True
+    edit_modal = True
+    create_modal = True
+    column_exclude_list = ['password_hash']
+
+class CategoryView(ModelView):
+
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+    create_modal = True
+    edit_modal = True
+    form_choices = {
+        'type':[
+            ('TOOL', 'Tool'),
+            ('EQUIPMENT', 'Equipment'),
+            ('TRUCK', 'Truck')
+        ]
+    }
+
+class AssetView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+    create_modal = True
+    edit_modal = True
+
+class FailureView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+class RepairView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+class PMView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+#user loader !! Don't Mess with
 @login_manager.user_loader
 def load_user(id):
     return Users.query.get(id)
 
-#@login_required
-admin.add_view(ModelView(Users, db.session))
-admin.add_view(ModelView(Category, db.session))
-admin.add_view(ModelView(Asset, db.session))
-admin.add_view(ModelView(Failure, db.session))
-admin.add_view(ModelView(Repair, db.session))
-admin.add_view(ModelView(PM, db.session))
+#Admin View Structure
+admin.add_view(UserView(Users, db.session))
+admin.add_view(CategoryView(Category, db.session))
+admin.add_view(AssetView(Asset, db.session))
+admin.add_view(FailureView(Failure, db.session))
+admin.add_view(RepairView(Repair, db.session))
+admin.add_view(PMView(PM, db.session))
 
 if __name__ == '__main__':
     db.init_app(app)
     db.create_all()
+    nav.init_app(app)
     app.run(debug=True)
