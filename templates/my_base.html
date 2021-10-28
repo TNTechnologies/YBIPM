@@ -3,9 +3,13 @@
 
 {% block title %} YBI Geo Maintenance {% endblock %}
 
-{% block navbar %}
-{{ nav.ybinavbar.render() }}
-{% endblock %}
+    {% block navbar %}
+        <div class="container">
+            {{ nav.ybinavbar.render() }}
+        </div>
+    {% endblock %}
+
+
 
 {% block content %}
    <div class="container">
