@@ -26,4 +26,5 @@ class RepairReport(FlaskForm):
     submit = SubmitField('Submit')
 
 class PMReport(FlaskForm):
+    notes = TextAreaField('Notes', validators=[DataRequired()])
     submit = SubmitField('Complete')

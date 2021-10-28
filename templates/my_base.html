@@ -6,3 +6,14 @@
 {% block navbar %}
 {{ nav.ybinavbar.render() }}
 {% endblock %}
+
+{% block content %}
+   <div>
+   {% for breadcrumb in breadcrumbs %}
+        <a href="{{ breadcrumb.url }}">{{ breadcrumb.text }}</a>
+        {{ '/' if not loop.last }}
+   {% endfor %}
+   </div>
+
+
+{% endblock %}

@@ -4,10 +4,10 @@ from flask import Flask, render_template, redirect, flash, url_for, request
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from flask_nav import Nav
-from flask_nav.elements import Navbar, View
+from flask_nav.elements import Navbar, View, Separator, Subgroup, Link
 from sqlalchemy import ForeignKey, false
 from sqlalchemy.orm import relationship, backref
-
+from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
 from forms import LoginForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
@@ -16,7 +16,7 @@ import datetime
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
-
+#App setup and configurable
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -28,13 +28,18 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 admin = Admin(app, name='YBI Geo Admin', template_mode='bootstrap3')
+bc = Breadcrumbs(app)
 
 #Navbar
 @nav.navigation()
 def ybinavbar():
     return Navbar(
         'YBI Geo',
-        View('Home', 'index')
+        View('Home', 'index'),
+        Link('Tool', 'category', 'Tool'),
+        Link('Equipment', 'category', 'Equipment'),
+        Link('Truck', 'category', 'Truck'),
+        View('Logout', 'logout')
 
     )
 
@@ -42,6 +47,7 @@ def ybinavbar():
 #Routes
 @app.route('/')
 @login_required
+@register_breadcrumb(app, '.', 'Home')
 def index():  # put application's code here
     tools = Category.query.filter_by(type='Tool').all()
     equipment = Category.query.filter_by(type='Equipment').all()
@@ -67,11 +73,42 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@app.route('/failure')
+@app.route('/category/<type>')
+@login_required
+def category():
+    query = Category.query.filter_by(type=type).all()
+    return render_template('category_list.html', query=query)
+
+
+@app.route('/failure/<int:id>')
 @login_required
 def failure():
-    return render_template('failure_report.html')
+    return render_template('event_report.html')
 
+@app.route('/repair/<int:id>')
+@login_required
+def repair():
+    return render_template('event_report.html')
+
+@app.route('/pm/<int:id>')
+@login_required
+def pm():
+    return render_template('event_report.html')
+
+@app.route('/tool')
+@login_required
+def tool():
+    return render_template('asset_view.html')
+
+@app.route('/equipment')
+@login_required
+def equipment():
+    return render_template('asset_view.html')
+
+@app.route('/truck')
+@login_required
+def truck():
+    return render_template('asset_view.html')
 
 # Database models
 class Users(UserMixin, db.Model):
@@ -202,14 +239,20 @@ class AssetView(ModelView):
 class FailureView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated
+    edit_modal = True
+    create_modal = True
 
 class RepairView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated
+    create_modal = True
+    edit_modal = True
 
 class PMView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated
+    create_modal = True
+    edit_modal = True
 
 #user loader !! Don't Mess with
 @login_manager.user_loader
