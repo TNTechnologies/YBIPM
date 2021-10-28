@@ -36,9 +36,9 @@ def ybinavbar():
     return Navbar(
         'YBI Geo',
         View('Home', 'index'),
-        Link('Tool', 'category', 'Tool'),
-        Link('Equipment', 'category', 'Equipment'),
-        Link('Truck', 'category', 'Truck'),
+        View('Tool', 'category', type='TOOL'),
+        View('Equipment', 'category', type='EQUIPMENT'),
+        View('Truck', 'category', type='TRUCK'),
         View('Logout', 'logout')
 
     )
@@ -75,40 +75,35 @@ def logout():
 
 @app.route('/category/<type>')
 @login_required
-def category():
+def category(type):
     query = Category.query.filter_by(type=type).all()
     return render_template('category_list.html', query=query)
 
 
 @app.route('/failure/<int:id>')
 @login_required
-def failure():
+def failure(id):
     return render_template('event_report.html')
 
 @app.route('/repair/<int:id>')
 @login_required
-def repair():
+def repair(id):
     return render_template('event_report.html')
 
 @app.route('/pm/<int:id>')
 @login_required
-def pm():
+def pm(id):
     return render_template('event_report.html')
 
-@app.route('/tool')
+@app.route('/asset/<int:id>')
 @login_required
-def tool():
+def asset(id):
     return render_template('asset_view.html')
 
-@app.route('/equipment')
-@login_required
-def equipment():
-    return render_template('asset_view.html')
+@app.route('/subcategory/<int:id>')
+def asset_list(id):
+    return render_template('asset_list.html')
 
-@app.route('/truck')
-@login_required
-def truck():
-    return render_template('asset_view.html')
 
 # Database models
 class Users(UserMixin, db.Model):
@@ -146,9 +141,12 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.Text(40), nullable=False)
     description = db.Column(db.Text(100))
-    type = db.Column(db.Text(20))
+    type = db.Column(db.Text(20), nullable=False)
     pm_interval = db.Column(db.Integer)
     assets = db.relationship("Asset", backref='category')
+
+    def __repr__(self):
+        return self.name
 
 class Asset(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -163,7 +161,7 @@ class Asset(db.Model):
     pms = db.relationship('PM', backref='asset')
 
     def __repr__(self):
-        return '<Asset %r>' % self.id
+        return self.serial_number
 
 class Failure(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -176,7 +174,7 @@ class Failure(db.Model):
     repairs = db.relationship('Repair', backref='failure')
 
     def __repr__(self):
-        return '<Failure %r' % self.id
+        return str(self.id)
 
 class Repair(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -189,7 +187,7 @@ class Repair(db.Model):
     completed = db.Column(db.Boolean)
 
     def __repr__(self):
-        return '<Repair %r>' % self.id
+        return str(self.id)
 
 class PM(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -200,7 +198,7 @@ class PM(db.Model):
     notes = db.Column(db.Text(1024))
 
     def __repr__(self):
-        return '<PM %r>' % self.id
+        return str(self.id)
 
 
 #Admin View modules
