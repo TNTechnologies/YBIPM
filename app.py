@@ -15,6 +15,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from flask_migrate import Migrate
 
 #App setup and configurable
 app = Flask(__name__)
@@ -29,6 +30,7 @@ login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 admin = Admin(app, name='YBI Geo Admin', template_mode='bootstrap3')
 bc = Breadcrumbs(app)
+migrate = Migrate(app, db)
 
 #Navbar
 @nav.navigation()
