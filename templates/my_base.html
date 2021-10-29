@@ -12,12 +12,7 @@
 
 
 {% block content %}
-   <div class="container">
-   {% for breadcrumb in breadcrumbs %}
-        <a href="{{ breadcrumb.url }}">{{ breadcrumb.text }}</a>
-        {{ '/' if not loop.last }}
-   {% endfor %}
-   </div>
+
 
 
 {% endblock %}

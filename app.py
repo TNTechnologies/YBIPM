@@ -38,9 +38,9 @@ def ybinavbar():
     return Navbar(
         'YBI Geo',
         View('Home', 'index'),
-        View('Tool', 'category', type='TOOL'),
-        View('Equipment', 'category', type='EQUIPMENT'),
-        View('Truck', 'category', type='TRUCK'),
+        View('Tool', 'category', type='tool'),
+        View('Equipment', 'category', type='equipment'),
+        View('Truck', 'category', type='truck'),
         View('Logout', 'logout')
 
     )
@@ -51,10 +51,7 @@ def ybinavbar():
 @login_required
 @register_breadcrumb(app, '.', 'Home')
 def index():  # put application's code here
-    tools = Category.query.filter_by(type='Tool').all()
-    equipment = Category.query.filter_by(type='Equipment').all()
-    trucks = Category.query.filter_by(type='Truck').all()
-    return render_template('index.html', tools=tools, equipment=equipment, trucks=trucks)
+    return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -100,11 +97,15 @@ def pm(id):
 @app.route('/asset/<int:id>')
 @login_required
 def asset(id):
-    return render_template('asset_view.html')
+    query = Asset.query.filter_by(id=id).first()
+    if query.failure:
+        print
+    return render_template('asset_view.html', query=query)
 
-@app.route('/subcategory/<int:id>')
+@app.route('/asset_list/<int:id>')
 def asset_list(id):
-    return render_template('asset_list.html')
+   query = Asset.query.filter_by(category_id=id).all()
+   return render_template('asset_list.html', query=query)
 
 
 # Database models
@@ -223,9 +224,9 @@ class CategoryView(ModelView):
     edit_modal = True
     form_choices = {
         'type':[
-            ('TOOL', 'Tool'),
-            ('EQUIPMENT', 'Equipment'),
-            ('TRUCK', 'Truck')
+            ('tool', 'Tool'),
+            ('equipment', 'Equipment'),
+            ('truck', 'Truck')
         ]
     }
 

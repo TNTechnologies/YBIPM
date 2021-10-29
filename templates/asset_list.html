@@ -2,4 +2,29 @@
 
 {% block content%}
    {{ super() }}
+    <div class="container">
+
+        <table class="table table-bordered">
+            <thead>
+                <th>Asset</th>
+                <th>PM</th>
+                <th>Failure</th>
+            </thead>
+            <tbody>
+                {% for item in query %}
+                <tr>
+                    <td class="info"><a href="{{ url_for('asset', id=item.id) }}" >{{ item.serial_number }} </a></td>
+                    <td class="warning"><a href="{{ url_for('pm', id=item.id) }}" >PM</a></td>
+                    <td class="danger"><a href="{{ url_for('failure', id=item.id) }}" >Failure</a></td>
+                </tr>
+                {%  endfor %}
+
+            </tbody>
+
+        </table>
+
+           </div>
+
+
+    </div>
 {% endblock %}
