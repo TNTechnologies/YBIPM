@@ -1,0 +1,47 @@
+{% extends 'my_base.html' %}
+
+{% block content%}
+{{ super() }}
+    <div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">Info</div>
+        <div class="panel-body">
+            <p>This will contain information about the PM procedure or check list maybe.</p>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Serial Number</th>
+                <th>Description</th>
+                <th>PM Due</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{ asset.serial_number }}</td>
+                <td>{{ asset.category.description }}</td>
+                <td>{{ asset.next_pm }}</td>
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    </div>
+    <div class="container">
+      <form method="post">
+        {{ form.csrf_token }}
+        <div class="container col-lg-12">
+            <div class="form-group">{{ form.notes.label }}</div>
+            <div class="form-group">{{ form.notes(rows='20',cols='95') }}</div>
+            <div class="form-group">{{ form.submit }}</div>
+        </div>
+
+
+      </form>
+
+
+    </div>
+{% endblock %}

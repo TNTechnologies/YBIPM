@@ -1,3 +1,4 @@
+import asset as asset
 import flask_sqlalchemy
 from dominate.util import lazy
 from flask import Flask, render_template, redirect, flash, url_for, request
@@ -8,7 +9,7 @@ from flask_nav.elements import Navbar, View, Separator, Subgroup, Link
 from sqlalchemy import ForeignKey, false
 from sqlalchemy.orm import relationship, backref
 from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
-from forms import LoginForm
+from forms import *
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -89,17 +90,26 @@ def failure(id):
 def repair(id):
     return render_template('event_report.html')
 
-@app.route('/pm/<int:id>')
+@app.route('/pm/<int:id>', methods=['GET', 'POST'])
 @login_required
 def pm(id):
-    return render_template('event_report.html')
+    asset = Asset.query.filter_by(id=id).first()
+    cat = Category.query.filter_by(id=asset.category_id).first()
+    form = PMReport()
+    if request.method == 'POST':
+
+        asset.next_pm = datetime.datetime.today() + datetime.timedelta(days=cat.pm_interval)
+        db.session.commit()
+        pm = PM(notes=form.notes.data, performed_by=current_user.name, asset_id=id)
+        db.session.add(pm)
+        db.session.commit()
+        return redirect(url_for('asset', id=id))
+    return render_template('pm_report.html', form=form, asset=asset)
 
 @app.route('/asset/<int:id>')
 @login_required
 def asset(id):
     query = Asset.query.filter_by(id=id).first()
-    if query.failure:
-        print
     return render_template('asset_view.html', query=query)
 
 @app.route('/asset_list/<int:id>')
@@ -145,7 +155,7 @@ class Category(db.Model):
     name = db.Column(db.Text(40), nullable=False)
     description = db.Column(db.Text(100))
     type = db.Column(db.Text(20), nullable=False)
-    pm_interval = db.Column(db.Integer)
+    pm_interval = db.Column(db.Integer, default=0)
     assets = db.relationship("Asset", backref='category')
 
     def __repr__(self):
