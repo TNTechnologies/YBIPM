@@ -99,8 +99,7 @@ def pm(id):
     if request.method == 'POST':
 
         asset.next_pm = datetime.datetime.today() + datetime.timedelta(days=cat.pm_interval)
-        db.session.commit()
-        pm = PM(notes=form.notes.data, performed_by=current_user.name, asset_id=id)
+        pm = PM(notes=form.notes.data, performed_by=current_user.name, asset_id=id, description=form.description.data)
         db.session.add(pm)
         db.session.commit()
         return redirect(url_for('asset', id=id))
@@ -109,8 +108,12 @@ def pm(id):
 @app.route('/asset/<int:id>')
 @login_required
 def asset(id):
-    query = Asset.query.filter_by(id=id).first()
-    return render_template('asset_view.html', query=query)
+    asset = Asset.query.filter_by(id=id).first()
+    failures = Failure.query.filter_by(asset_id=id).all()
+    repairs = Repair.query.filter_by(asset_id=id).all()
+    pms = PM.query.filter_by(asset_id=id).all()
+
+    return render_template('asset_view.html', asset=asset, failures=failures, pms=pms, repairs=repairs)
 
 @app.route('/asset_list/<int:id>')
 def asset_list(id):
@@ -182,7 +185,7 @@ class Failure(db.Model):
     date = db.Column(db.DateTime, default=datetime.datetime.now)
     reported_by = db.Column(db.Text(20))
     description = db.Column(db.Text(100), nullable=False)
-    notes = db.Column(db.Text(1024))
+    notes = db.Column(db.Text(1024), nullable=False)
     completed = db.Column(db.Boolean)
     repairs = db.relationship('Repair', backref='failure')
 

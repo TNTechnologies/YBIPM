@@ -2,8 +2,124 @@
 
 {% block content%}
    {{ super() }}
-    <div class="container">
 
+    <div class="container">
+    <div class="panel panel-info">
+        <dev class="panel-heading">Info</dev>
+        <dev class="panel-body"><p>{{ asset.description }}</p></dev>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td>Serial Number</td>
+                        <td>Category</td>
+                        <td>Next PM</td>
+                        <td>Notes</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ asset.serial_number }}</td>
+                        <td>{{ asset.category.description }}</td>
+                        <td>{{ asset.next_pm }}</td>
+                        <td>{{ asset.notes }}</td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+    </div>
+
+    </div>
+    <div class="container">
+        {%  if failures %}
+            <div class="panel panel-danger">
+            <dev class="panel-heading">Open Failures</dev>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Date</td>
+                            <td>Description</td>
+                            <td>Reported By</td>
+                            <td>Closed</td>
+                        </tr>
+                    </thead>
+                    <tbody>{%  for failure in failures %}
+                        <tr>
+                            <td>{{ failure.date }}</td>
+                            <td>{{ failure.description }}</td>
+                            <td>{{ failure.reported_by }}</td>
+                            <td>
+                                {{ failure.completed }}
+                            </td>
+                        </tr>
+
+                      {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+    </div>
+
+    <div class="container">
+        {%  if repairs %}
+            <div class="panel panel-success">
+            <dev class="panel-heading">Repairs</dev>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Date</td>
+                            <td>Description</td>
+                            <td>Repaired By</td>
+                            <td>Closed</td>
+                        </tr>
+                    </thead>
+                    <tbody>{%  for repair in repairs %}
+                        <tr>
+                            <td>{{ repair.date }}</td>
+                            <td>{{ repair.description }}</td>
+                            <td>{{ repair.repaired_by }}</td>
+                            <td>
+                                {{ repair.completed }}
+                            </td>
+                        </tr>
+
+                      {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+    </div>
+
+    <div class="container">
+        {%  if pms %}
+            <div class="panel panel-warning">
+            <dev class="panel-heading">PM's</dev>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Date</td>
+                            <td>Description</td>
+                            <td>Notes</td>
+                            <td>Performed By</td>
+                        </tr>
+                    </thead>
+                    <tbody>{%  for pm in pms %}
+                        <tr>
+                            <td>{{ pm.date }}</td>
+                            <td>{{ pm.description }}</td>
+                            <td>{{ pm.notes }}</td>
+                            <td>{{ pm.performed_by }}</td>
+                            <td>
+                            </td>
+                        </tr>
+
+                      {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
 
     </div>
 {% endblock %}
