@@ -90,7 +90,14 @@ def failure_report(id):
 @app.route('/failure/<int:id>', methods=['GET', 'POST'])
 @login_required
 def failure(id):
-    return render_template('failure.html')
+    failure = Failure.query.filter_by(id=id).first()
+    form = FailureReport(obj=failure)
+    if request.method == 'POST':
+        failure.description = form.description.data
+        failure.notes = form.notes.data
+        db.session.commit()
+        return redirect(url_for('asset', id=failure.asset_id))
+    return render_template('failure.html', form=form, failure=failure)
 
 @app.route('/repair/<int:id>')
 @login_required

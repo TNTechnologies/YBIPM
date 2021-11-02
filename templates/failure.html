@@ -2,5 +2,14 @@
 
 {% block content%}
 {{ super() }}
+    <form  method="post">
+    <div class="container">
+          {{ form.csrf_token }}
+{{ form.description(class_='form-group form-control') }}
+    {{ form.notes(class_='form-group form-control') }}
+ {{ form.submit }}
 
+    </div>
+
+    </form>
 {% endblock %}
