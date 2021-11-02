@@ -31,22 +31,5 @@
 
 
 
-    <form  method="post">
-    <div class="container">
-            {{ form.csrf_token }}
-            {{ form.description.label(class_='panel') }}
-            {{ form.description(class_='form-group form-control') }}
-            {{ form.notes.label(class_='panel') }}
-            {{ form.notes(class_='form-group form-control', rows='10') }}
-            {{ form.submit }}
-
-    </div>
-
-    </form>
-
-<div class="container">
-<a href="{{ url_for('repair_report', id=failure.id)}}" class="btn btn-success">Repair</a>
-
-</div>
 
 {% endblock %}

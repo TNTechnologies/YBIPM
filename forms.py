@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, TextAreaField, RadioField
+from wtforms import StringField, SubmitField, PasswordField, TextAreaField, RadioField, BooleanField
 from wtforms.validators import DataRequired, Length
 
 class LoginForm(FlaskForm):
@@ -22,7 +22,7 @@ class FailureReport(FlaskForm):
 class RepairReport(FlaskForm):
     description = TextAreaField('Description', validators=[DataRequired()])
     notes = TextAreaField('Notes', validators=[DataRequired()])
-    completed = RadioField('Completed')
+    completed = BooleanField('Completed')
     submit = SubmitField('Submit')
 
 class PMReport(FlaskForm):

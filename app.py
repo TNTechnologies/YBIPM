@@ -1,3 +1,4 @@
+import asset as asset
 from flask import Flask, render_template, redirect, flash, url_for, request
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
@@ -81,7 +82,11 @@ def failure_report(id):
     form = FailureReport()
     asset = Asset.query.filter_by(id=id).first()
     if request.method == 'POST':
-        failure = Failure(description=form.description.data, notes=form.notes.data, date=datetime.datetime.now(), reported_by=current_user.name, asset_id=id)
+        failure = Failure(description=form.description.data,
+                          notes=form.notes.data,
+                          date=datetime.datetime.now(),
+                          reported_by=current_user.name,
+                          asset_id=id)
         db.session.add(failure)
         db.session.commit()
         return redirect(url_for('asset', id=id))
@@ -91,18 +96,46 @@ def failure_report(id):
 @login_required
 def failure(id):
     failure = Failure.query.filter_by(id=id).first()
+    asset = Asset.query.filter_by(id=failure.asset_id).first()
+    repair = Repair.query.filter_by(id=failure.id).all()
     form = FailureReport(obj=failure)
     if request.method == 'POST':
         failure.description = form.description.data
         failure.notes = form.notes.data
         db.session.commit()
         return redirect(url_for('asset', id=failure.asset_id))
-    return render_template('failure.html', form=form, failure=failure)
+    return render_template('failure.html',
+                           form=form,
+                           failure=failure,
+                           asset=asset,
+                           repair=repair)
 
 @app.route('/repair/<int:id>')
 @login_required
 def repair(id):
-    return render_template('event_report.html')
+    return render_template('repair.html')
+
+@app.route('/repair_report/<int:id>', methods=['GET', 'POST'])
+@login_required
+def repair_report(id):
+    failure = Failure.query.filter_by(id=id).first()
+    asset = Asset.query.filter_by(id=failure.asset_id).first()
+    category = Category.query.filter_by(id=asset.category_id).first()
+    form = RepairReport()
+    if request.method == 'POST':
+        repair = Repair(repaired_by=current_user.name,
+                        description=form.description.data,
+                        notes=form.notes.data,
+                        asset_id=asset.id,
+                        failure_id=failure.id,
+                        completed=form.completed.data)
+        if form.completed == True:
+            failure.completed = True
+            asset.next_pm = datetime.datetime.now() + datetime.timedelta(days=category.pm_interval)
+        db.session.add(repair)
+        db.session.commit()
+        return redirect(url_for('asset', id=repair.asset_id))
+    return render_template('repair_report.html', failure=failure, asset=asset, form=form)
 
 @app.route('/pm/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -113,7 +146,10 @@ def pm(id):
     if request.method == 'POST':
 
         asset.next_pm = datetime.datetime.today() + datetime.timedelta(days=cat.pm_interval)
-        pm = PM(notes=form.notes.data, performed_by=current_user.name, asset_id=id, description=form.description.data)
+        pm = PM(notes=form.notes.data,
+                performed_by=current_user.name,
+                asset_id=id,
+                description=form.description.data)
         db.session.add(pm)
         db.session.commit()
         return redirect(url_for('asset', id=id))
@@ -209,7 +245,7 @@ class Failure(db.Model):
 class Repair(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
-    category_id = db.Column(db.Integer, db.ForeignKey("failure.id"))
+    failure_id = db.Column(db.Integer, db.ForeignKey("failure.id"))
     date = db.Column(db.DateTime, default=datetime.datetime.now)
     repaired_by = db.Column(db.Text(20))
     description = db.Column(db.Text(100))
@@ -298,5 +334,7 @@ admin.add_view(PMView(PM, db.session))
 if __name__ == '__main__':
     db.init_app(app)
     db.create_all()
+    migrate.init_app(app)
     nav.init_app(app)
     app.run(debug=True)
+
