@@ -1,5 +1,3 @@
-from crypt import methods
-
 from flask import Flask, render_template, redirect, flash, url_for, request
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
@@ -177,7 +175,7 @@ class Asset(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     serial_number = db.Column(db.Text(10))
     next_pm = db.Column(db.DateTime, default=datetime.datetime.now)
-    description = db.Column(db.Text(40))
+    description = db.Column(db.Text(80))
     active = db.Column(db.Boolean, default=True)
     notes = db.Column(db.Text(255))
     category_id = db.Column(db.Integer, db.ForeignKey("category.id"))

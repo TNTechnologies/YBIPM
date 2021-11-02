@@ -4,32 +4,31 @@
    {{ super() }}
 
     <div class="container">
-    <div class="panel panel-info">
-        <dev class="panel-heading">Info</dev>
-        <dev class="panel-body"><p>{{ asset.description }}</p></dev>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <td>Serial Number</td>
-                        <td>Category</td>
-                        <td>Next PM</td>
-                        <td>Notes</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{{ asset.serial_number }}</td>
-                        <td>{{ asset.category.description }}</td>
-                        <td>{{ asset.next_pm }}</td>
-                        <td>{{ asset.notes }}</td>
-                    </tr>
+        <div class="panel panel-default panel-info">
+            <dev class="panel-heading">Info</dev>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Serial Number</td>
+                            <td>Category</td>
+                            <td>Next PM</td>
+                            <td>Notes</td>
+                         </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ asset.serial_number }}</td>
+                            <td>{{ asset.category.description }}</td>
+                            <td>{{ asset.next_pm }}</td>
+                            <td>{{ asset.notes }}</td>
+                        </tr>
 
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
 
+        </div>
     </div>
 
-    </div>
     <div class="container">
         {%  if failures %}
             <div class="panel panel-danger">
