@@ -47,7 +47,9 @@ def ybinavbar():
 @app.route('/')
 @login_required
 def index():  # put application's code here
+    assets = Asset.query.filter()
 
+    failures = Failure.filter_by(completed=False).all()
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])

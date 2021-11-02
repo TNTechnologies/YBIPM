@@ -5,14 +5,20 @@
   {{ super() }}
     <div class="container">
     <div class="container">
-       <div>
-           Upcoming PM's
+       <div class="panel panel-warning">
+           <div class="panel-heading">Upcoming PM's</div>
+           {% for pm in pms %}
+           {% endfor %}
        </div>
+
     </div>
     <div class="container">
-        <div>
-            Open Failures
+        <div class="panel panel-danger">
+            <div class="panel-heading">Open Failures</div>
+            {% for failure in repairs %}
+            {% endfor %}
         </div>
+
     </div>
     </div>
 {% endblock %}
