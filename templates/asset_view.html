@@ -5,7 +5,8 @@
 
     <div class="container">
         <div class="panel panel-default panel-info">
-            <dev class="panel-heading">Info</dev>
+            <div class="panel-heading">Info</div>
+
                 <table class="table">
                     <thead>
                         <tr>
@@ -32,7 +33,7 @@
     <div class="container">
         {%  if failures %}
             <div class="panel panel-danger">
-            <dev class="panel-heading">Open Failures</dev>
+            <div class="panel-heading">Open Failures</div>
                 <table class="table">
                     <thead>
                         <tr>
@@ -63,7 +64,7 @@
     <div class="container">
         {%  if repairs %}
             <div class="panel panel-success">
-            <dev class="panel-heading">Repairs</dev>
+            <div class="panel-heading">Repairs</div>
                 <table class="table">
                     <thead>
                         <tr>
@@ -75,7 +76,7 @@
                     </thead>
                     <tbody>{%  for repair in repairs %}
                         <tr>
-                            <td>{{ repair.date }}</td>
+                            <td><a href="{{ url_for('repair', id=repair.id) }}">{{ repair.date }}</a></td>
                             <td>{{ repair.description }}</td>
                             <td>{{ repair.repaired_by }}</td>
                             <td>
@@ -94,7 +95,7 @@
     <div class="container">
         {%  if pms %}
             <div class="panel panel-warning">
-            <dev class="panel-heading">PM's</dev>
+            <div class="panel-heading">PM's</div>
                 <table class="table">
                     <thead>
                         <tr>

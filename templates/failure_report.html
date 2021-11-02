@@ -33,9 +33,9 @@
             {{ form.csrf_token }}
             <div class="container col-lg-12">
                 <div class="form-group">{{ form.description.label }}</div>
-                <dev class="form-group">{{ form.description(rows='5', cols='80') }}</dev>
-                <dev class="form-group">{{ form.notes.label }}</dev>
-                <dev class="form-group">{{ form.notes(rows='20', cols='80') }}</dev>
+                <div class="form-group">{{ form.description(rows='5', class_='form-group form-control') }}</div>
+                <div class="form-group">{{ form.notes.label }}</div>
+                <div class="form-group">{{ form.notes(rows='10', class_='form-group form-control') }}</div>
                 <div class="form-group">{{ form.submit }}</div>
             </div>
         </form>

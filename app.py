@@ -46,8 +46,8 @@ def ybinavbar():
 #Routes
 @app.route('/')
 @login_required
-@register_breadcrumb(app, '.', 'Home')
 def index():  # put application's code here
+
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -90,7 +90,9 @@ def failure_report(id):
         db.session.add(failure)
         db.session.commit()
         return redirect(url_for('asset', id=id))
-    return render_template('failure_report.html', asset=asset, form=form)
+    return render_template('failure_report.html',
+                           asset=asset,
+                           form=form)
 
 @app.route('/failure/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -110,10 +112,28 @@ def failure(id):
                            asset=asset,
                            repair=repair)
 
-@app.route('/repair/<int:id>')
+@app.route('/repair/<int:id>', methods=['GET', 'POST'])
 @login_required
 def repair(id):
-    return render_template('repair.html')
+    repair = Repair.query.filter_by(id=id).first()
+    failure = Failure.query.filter_by(id=repair.failure_id).first()
+    asset = Asset.query.filter_by(id=repair.asset_id).first()
+    category = Category.query.filter_by(id=asset.category_id).first()
+    form = RepairReport(obj=repair)
+    if request.method == 'POST':
+        repair.description = form.description.data
+        repair.notes = form.notes.data
+        repair.completed = form.completed.data
+        if form.completed.data == True:
+            failure.completed = True
+            asset.next_pm = datetime.datetime.today() + datetime.timedelta(days=category.pm_interval)
+        db.session.commit()
+        return redirect(url_for('asset', id=asset.id))
+    return render_template('repair.html',
+                           form=form,
+                           asset=asset,
+                           failure=failure,
+                           repair=repair)
 
 @app.route('/repair_report/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -129,13 +149,16 @@ def repair_report(id):
                         asset_id=asset.id,
                         failure_id=failure.id,
                         completed=form.completed.data)
-        if form.completed == True:
+        if form.completed.data == True:
             failure.completed = True
             asset.next_pm = datetime.datetime.now() + datetime.timedelta(days=category.pm_interval)
         db.session.add(repair)
         db.session.commit()
         return redirect(url_for('asset', id=repair.asset_id))
-    return render_template('repair_report.html', failure=failure, asset=asset, form=form)
+    return render_template('repair_report.html',
+                           failure=failure,
+                           asset=asset,
+                           form=form)
 
 @app.route('/pm/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -153,7 +176,9 @@ def pm(id):
         db.session.add(pm)
         db.session.commit()
         return redirect(url_for('asset', id=id))
-    return render_template('pm_report.html', form=form, asset=asset)
+    return render_template('pm_report.html',
+                           form=form,
+                           asset=asset)
 
 @app.route('/asset/<int:id>')
 @login_required
@@ -163,12 +188,17 @@ def asset(id):
     repairs = Repair.query.filter_by(asset_id=id).all()
     pms = PM.query.filter_by(asset_id=id).all()
 
-    return render_template('asset_view.html', asset=asset, failures=failures, pms=pms, repairs=repairs)
+    return render_template('asset_view.html',
+                           asset=asset,
+                           failures=failures,
+                           pms=pms,
+                           repairs=repairs)
 
 @app.route('/asset_list/<int:id>')
 def asset_list(id):
    query = Asset.query.filter_by(category_id=id).all()
-   return render_template('asset_list.html', query=query)
+   return render_template('asset_list.html',
+                          query=query)
 
 
 # Database models

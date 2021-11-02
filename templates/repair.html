@@ -3,9 +3,9 @@
 {% block content%}
 {{ super() }}
 
-     <div class="container">
+   <div class="container">
         <div class="panel panel-default panel-info">
-            <dev class="panel-heading">Info</dev>
+            <div class="panel-heading">Info</div>
                 <table class="table">
                     <thead>
                         <tr>
@@ -28,7 +28,50 @@
 
         </div>
     </div>
+    <div class="container">
+     <div class="panel panel-danger">
+            <div class="panel-heading">Failure Info</div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Date</td>
+                            <td>Reported Byn</td>
+                            <td>Descriptio</td>
+                            <td>Notes</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ failure.date }}</td>
+                            <td>{{ failure.reported_by }}</td>
+                            <td>{{ failure.description }}</td>
+                            <td>
+                                {{ failure.notes }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
+     </div>
+</div>
+    </div>
+   <form  method="post">
+    <div class="container">
+            {{ form.csrf_token }}
+            {{ form.description.label(class_='panel') }}
+            {{ form.description(class_='form-group form-control') }}
+            {{ form.notes.label(class_='panel') }}
+            {{ form.notes(class_='form-group form-control', rows='10') }}
+        <div class="container">
+
+            {{ form.completed.label }}
+            {{ form.completed }}
+        </div>
+
+            {{ form.submit }}
+
+    </div>
+   </form>
 
 
 
