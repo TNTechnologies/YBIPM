@@ -15,7 +15,7 @@
                 <tr>
                     <td class="info"><a href="{{ url_for('asset', id=item.id) }}" >{{ item.serial_number }} </a></td>
                     <td class="warning"><a href="{{ url_for('pm', id=item.id) }}" >PM</a></td>
-                    <td class="danger"><a href="{{ url_for('failure', id=item.id) }}" >Failure</a></td>
+                    <td class="danger"><a href="{{ url_for('failure_report', id=item.id) }}" >Failure</a></td>
                 </tr>
                 {%  endfor %}
 

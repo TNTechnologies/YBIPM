@@ -45,7 +45,7 @@
                     </thead>
                     <tbody>{%  for failure in failures %}
                         <tr>
-                            <td>{{ failure.date }}</td>
+                            <td><a href="{{ url_for('failure', id=failure.id) }}">{{ failure.date }}</a></td>
                             <td>{{ failure.description }}</td>
                             <td>{{ failure.reported_by }}</td>
                             <td>

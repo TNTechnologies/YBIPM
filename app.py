@@ -1,13 +1,10 @@
-import asset as asset
-import flask_sqlalchemy
-from dominate.util import lazy
+from crypt import methods
+
 from flask import Flask, render_template, redirect, flash, url_for, request
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from flask_nav import Nav
 from flask_nav.elements import Navbar, View, Separator, Subgroup, Link
-from sqlalchemy import ForeignKey, false
-from sqlalchemy.orm import relationship, backref
 from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
 from forms import *
 from flask_sqlalchemy import SQLAlchemy
@@ -80,10 +77,22 @@ def category(type):
     return render_template('category_list.html', query=query)
 
 
-@app.route('/failure/<int:id>')
+@app.route('/failure_report/<int:id>', methods=['GET', 'POST'])
+@login_required
+def failure_report(id):
+    form = FailureReport()
+    asset = Asset.query.filter_by(id=id).first()
+    if request.method == 'POST':
+        failure = Failure(description=form.description.data, notes=form.notes.data, date=datetime.datetime.now(), reported_by=current_user.name, asset_id=id)
+        db.session.add(failure)
+        db.session.commit()
+        return redirect(url_for('asset', id=id))
+    return render_template('failure_report.html', asset=asset, form=form)
+
+@app.route('/failure/<int:id>', methods=['GET', 'POST'])
 @login_required
 def failure(id):
-    return render_template('event_report.html')
+    return render_template('failure.html')
 
 @app.route('/repair/<int:id>')
 @login_required
@@ -186,7 +195,7 @@ class Failure(db.Model):
     reported_by = db.Column(db.Text(20))
     description = db.Column(db.Text(100), nullable=False)
     notes = db.Column(db.Text(1024), nullable=False)
-    completed = db.Column(db.Boolean)
+    completed = db.Column(db.Boolean, default=False)
     repairs = db.relationship('Repair', backref='failure')
 
     def __repr__(self):
