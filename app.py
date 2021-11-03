@@ -1,10 +1,8 @@
-import asset as asset
 from flask import Flask, render_template, redirect, flash, url_for, request
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from flask_nav import Nav
 from flask_nav.elements import Navbar, View, Separator, Subgroup, Link
-from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
 from forms import *
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
@@ -26,7 +24,6 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 admin = Admin(app, name='YBI Geo Admin', template_mode='bootstrap3')
-bc = Breadcrumbs(app)
 migrate = Migrate(app, db)
 
 #Navbar
@@ -47,10 +44,11 @@ def ybinavbar():
 @app.route('/')
 @login_required
 def index():  # put application's code here
-    assets = Asset.query.filter()
-
-    failures = Failure.filter_by(completed=False).all()
-    return render_template('index.html')
+    assets = Asset.query.filter(Asset.next_pm <= datetime.datetime.now() + datetime.timedelta(days=7)).all()
+    failures = Failure.query.filter_by(completed=False).all()
+    return render_template('index.html',
+                           assets=assets,
+                           failures=failures)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

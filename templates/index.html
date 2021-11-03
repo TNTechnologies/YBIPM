@@ -4,22 +4,59 @@
 {% block content %}
   {{ super() }}
     <div class="container">
-    <div class="container">
        <div class="panel panel-warning">
            <div class="panel-heading">Upcoming PM's</div>
-           {% for pm in pms %}
-           {% endfor %}
+            <div class="panel-body">
+           <table class="table">
+               <thead>
+               <tr>
+                   <td>Serial Number</td>
+                   <td>Category</td>
+                   <td>PM Due</td>
+               </tr>
+               </thead>
+               <tbody>
+               {% for asset in assets %}
+                <tr>
+                    <td><a href="{{ url_for('pm', id=asset.id) }}">{{ asset.serial_number }}</a></td>
+                    <td>{{ asset.category.description }}</td>
+                    <td>{{ asset.next_pm }}</td>
+                </tr>
+                {% endfor %}
+               </tbody>
+           </table>
+            </div>
        </div>
 
     </div>
     <div class="container">
         <div class="panel panel-danger">
             <div class="panel-heading">Open Failures</div>
-            {% for failure in repairs %}
-            {% endfor %}
+            <div class="panel-body">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Serial Number</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Reported By</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for failure in failures %}
+                    <tr>
+                        <td><a href="{{ url_for('failure', id=failure.id) }}">{{ failure. asset.serial_number}}</a></td>
+                        <td>{{ failure.asset.category.description }}</td>
+                        <td>{{ failure.date }}</td>
+                        <td>{{ failure.reported_by }}</td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
         </div>
 
-    </div>
     </div>
 {% endblock %}
 

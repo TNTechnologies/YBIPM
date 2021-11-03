@@ -5,7 +5,7 @@
 {{ super() }}
 
      <div class="container">
-        <div class="panel panel-default panel-info">
+        <div class="panel panel-default panel-success">
             <div class="panel-heading">Info</div>
                 <table class="table">
                     <thead>
@@ -36,8 +36,8 @@
                     <thead>
                         <tr>
                             <td>Date</td>
-                            <td>Reported Byn</td>
-                            <td>Descriptio</td>
+                            <td>Reported By</td>
+                            <td>Description</td>
                             <td>Notes</td>
                         </tr>
                     </thead>
@@ -58,17 +58,16 @@
    <form  method="post">
     <div class="container">
             {{ form.csrf_token }}
-            {{ form.description.label(class_='panel') }}
+            {{ form.description.label(class_='form-group form-control') }}
             {{ form.description(class_='form-group form-control') }}
-            {{ form.notes.label(class_='panel') }}
+            {{ form.notes.label(class_='form-group form-control') }}
             {{ form.notes(class_='form-group form-control', rows='10') }}
-        <div class="container">
-
-            {{ form.completed.label }}
-            {{ form.completed }}
+            <div>{{ form.completed.label(class_='form-group form-control') }}</div>
+            <div>{{ form.completed(class_='btn btn-success') }}</div>
+            <div>{{ form.submit(class_='btn btn-success') }}</div>
         </div>
 
-            {{ form.submit }}
+
 
     </div>
    </form>

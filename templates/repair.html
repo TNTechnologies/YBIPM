@@ -58,19 +58,17 @@
    <form  method="post">
     <div class="container">
             {{ form.csrf_token }}
-            {{ form.description.label(class_='panel') }}
+            {{ form.description.label(class_='form-group form-control') }}
             {{ form.description(class_='form-group form-control') }}
-            {{ form.notes.label(class_='panel') }}
+            {{ form.notes.label(class_='form-group form-control') }}
             {{ form.notes(class_='form-group form-control', rows='10') }}
-        <div class="container">
-
             {{ form.completed.label }}
-            {{ form.completed }}
+            {{ form.completed(class_='form-group') }}
+            <div>{{ form.submit(class_='btn btn-success') }}</div>
         </div>
 
-            {{ form.submit }}
 
-    </div>
+
    </form>
 
 
