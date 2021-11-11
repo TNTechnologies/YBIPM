@@ -19,7 +19,7 @@
                {% for asset in assets %}
                 <tr>
                     <td><a href="{{ url_for('pm', id=asset.id) }}">{{ asset.serial_number }}</a></td>
-                    <td>{{ asset.category.description }}</td>
+                    <td>{{ asset.description }}</td>
                     <td>{{ asset.next_pm }}</td>
                 </tr>
                 {% endfor %}
