@@ -35,6 +35,7 @@ def ybinavbar():
         View('Tool', 'category', type='tool'),
         View('Equipment', 'category', type='equipment'),
         View('Truck', 'category', type='truck'),
+        View('Admin', 'admin.index'),
         View('Logout', 'logout')
 
     )
