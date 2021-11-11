@@ -87,6 +87,7 @@ def failure_report(id):
                           date=datetime.datetime.now(),
                           reported_by=current_user.name,
                           asset_id=id)
+        asset.active = False
         db.session.add(failure)
         db.session.commit()
         return redirect(url_for('asset', id=id))
@@ -126,6 +127,7 @@ def repair(id):
         repair.completed = form.completed.data
         if form.completed.data == True:
             failure.completed = True
+            asset.active = True
             asset.next_pm = datetime.datetime.today() + datetime.timedelta(days=category.pm_interval)
         db.session.commit()
         return redirect(url_for('asset', id=asset.id))
@@ -151,6 +153,7 @@ def repair_report(id):
                         completed=form.completed.data)
         if form.completed.data == True:
             failure.completed = True
+            asset.active = True
             asset.next_pm = datetime.datetime.now() + datetime.timedelta(days=category.pm_interval)
         db.session.add(repair)
         db.session.commit()
