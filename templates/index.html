@@ -3,7 +3,38 @@
 
 {% block content %}
   {{ super() }}
-    <div class="container">
+
+<div class="container">
+    <div class="panel panel-info">
+        <div class="panel-heading">Upcoming Calibration's</div>
+        <div class="panel-body">
+            <table class="table">
+                <thead>
+                <tr>
+                    <td>Serial Number</td>
+                    <td>Description</td>
+                    <td>Calibration Due</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for calibration in calibrations %}
+                {% if calibration.category.calibration_required %}
+                <tr>
+                    <td><a href="{{ url_for('calibrate', id=calibration.id) }}">{{ calibration.serial_number }}</a></td>
+                    <td>{{ calibration.description }}</td>
+                    <td>{{ calibration.next_cal.strftime('%Y-%m-%d') }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="container">
        <div class="panel panel-warning">
            <div class="panel-heading">Upcoming PM's</div>
             <div class="panel-body">

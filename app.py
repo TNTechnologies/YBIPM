@@ -46,9 +46,11 @@ def ybinavbar():
 @login_required
 def index():  # put application's code here
     assets = Asset.query.filter(Asset.next_pm <= datetime.datetime.now() + datetime.timedelta(days=7)).all()
+    calibrations = Asset.query.filter(Asset.next_cal <= datetime.datetime.now() + datetime.timedelta(days=7)).all()
     failures = Failure.query.filter_by(completed=False).all()
     return render_template('index.html',
                            assets=assets,
+                           calibrations=calibrations,
                            failures=failures)
 
 @app.route('/login', methods=['GET', 'POST'])
