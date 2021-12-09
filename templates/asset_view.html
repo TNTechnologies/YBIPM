@@ -18,13 +18,13 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <td>Serial Number</td>
-                            <td>Description</td>
-                            <td>Next PM</td>
+                            <th>Serial Number</th>
+                            <th>Description</th>
+                            <th>Next PM</th>
                             {% if asset.category.calibration_required %}
-                            <td>Next Calibration</td>
+                            <th>Next Calibration</th>
                             {% endif %}
-                            <td>Notes</td>
+                            <th>Notes</th>
                          </tr>
                     </thead>
                     <tbody>
@@ -51,10 +51,10 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <td>Date</td>
-                            <td>Description</td>
-                            <td>Reported By</td>
-                            <td>Closed</td>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Reported By</th>
+                            <th>Closed</th>
                         </tr>
                     </thead>
                     <tbody>{%  for failure in failures %}
@@ -82,10 +82,10 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <td>Date</td>
-                            <td>Description</td>
-                            <td>Repaired By</td>
-                            <td>Closed</td>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Repaired By</th>
+                            <th>Closed</th>
                         </tr>
                     </thead>
                     <tbody>{%  for repair in repairs %}
@@ -113,10 +113,10 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <td>Date</td>
-                            <td>Description</td>
-                            <td>Notes</td>
-                            <td>Performed By</td>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Notes</th>
+                            <th>Performed By</th>
                         </tr>
                     </thead>
                     <tbody>{%  for pm in pms %}
@@ -143,10 +143,10 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <td>Date</td>
-                            <td>Description</td>
-                            <td>Values</td>
-                            <td>Performed By</td>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Values</th>
+                            <th>Performed By</th>
                         </tr>
                     </thead>
                     <tbody>{%  for cal in cals %}
