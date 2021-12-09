@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, TextAreaField, RadioField, BooleanField
+from wtforms import StringField, SubmitField, PasswordField, TextAreaField, RadioField, BooleanField, validators
 from wtforms.validators import DataRequired, Length
 
 class LoginForm(FlaskForm):
@@ -28,4 +28,9 @@ class RepairReport(FlaskForm):
 class PMReport(FlaskForm):
     description = TextAreaField('Description', validators=[DataRequired()])
     notes = TextAreaField('Notes', validators=[DataRequired()])
+    submit = SubmitField('Complete')
+
+class CalReport(FlaskForm):
+    description = TextAreaField('Description', validators=[DataRequired()])
+    values = TextAreaField('Calibration Values', validators=[DataRequired()])
     submit = SubmitField('Complete')

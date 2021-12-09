@@ -191,19 +191,40 @@ def asset(id):
     failures = Failure.query.filter_by(asset_id=id).all()
     repairs = Repair.query.filter_by(asset_id=id).all()
     pms = PM.query.filter_by(asset_id=id).all()
+    cals = Calibration.query.filter_by(asset_id=id).all()
 
     return render_template('asset_view.html',
                            asset=asset,
                            failures=failures,
                            pms=pms,
-                           repairs=repairs)
+                           repairs=repairs,
+                           cals=cals)
 
 @app.route('/asset_list/<int:id>')
+@login_required
 def asset_list(id):
    query = Asset.query.filter_by(category_id=id).all()
    return render_template('asset_list.html',
                           query=query)
 
+@app.route('/cal/<int:id>', methods=['GET', 'POST'])
+@login_required
+def calibrate(id):
+    asset = Asset.query.filter_by(id=id).first()
+    cat = Category.query.filter_by(id=asset.category_id).first()
+    form = CalReport()
+    if request.method == 'POST':
+        asset.next_cal = datetime.datetime.today() + datetime.timedelta(days=cat.cal_interval)
+        cal = Calibration(asset_id=id,
+                          performed_by=current_user.name,
+                          description=form.description.data,
+                          values=form.values.data)
+        db.session.add(cal)
+        db.session.commit()
+        return redirect(url_for('asset', id=id))
+    return render_template('cal_report.html',
+                           form=form,
+                           asset=asset)
 
 # Database models
 class Users(UserMixin, db.Model):
@@ -243,7 +264,10 @@ class Category(db.Model):
     description = db.Column(db.Text(100))
     type = db.Column(db.Text(20), nullable=False)
     pm_interval = db.Column(db.Integer, default=0)
+    cal_interval = db.Column(db.Integer, default=0)
     assets = db.relationship("Asset", backref='category')
+    pm_procedure = db.Column(db.Text(1024))
+    calibration_required = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return self.name
@@ -252,6 +276,7 @@ class Asset(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     serial_number = db.Column(db.Text(10))
     next_pm = db.Column(db.DateTime, default=datetime.datetime.now)
+    next_cal = db.Column(db.DateTime, default=datetime.datetime.now)
     description = db.Column(db.Text(80))
     active = db.Column(db.Boolean, default=True)
     notes = db.Column(db.Text(255))
@@ -259,6 +284,7 @@ class Asset(db.Model):
     failures = db.relationship('Failure', backref='asset')
     repairs = db.relationship('Repair', backref='asset')
     pms = db.relationship('PM', backref='asset')
+    cals = db.relationship('Calibration', backref='asset')
 
     def __repr__(self):
         return self.serial_number
@@ -296,6 +322,17 @@ class PM(db.Model):
     performed_by = db.Column(db.Text(20))
     description = db.Column(db.Text(100))
     notes = db.Column(db.Text(1024))
+
+    def __repr__(self):
+        return str(self.id)
+
+class Calibration(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
+    date = db.Column(db.DateTime, default=datetime.datetime.now)
+    performed_by = db.Column(db.Text(20))
+    description = db.Column(db.Text(100))
+    values = db.Column(db.Text(1024))
 
     def __repr__(self):
         return str(self.id)
@@ -352,6 +389,12 @@ class PMView(ModelView):
     create_modal = True
     edit_modal = True
 
+class CalView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated
+    create_modal = True
+    edit_modal = True
+
 #user loader !! Don't Mess with
 @login_manager.user_loader
 def load_user(id):
@@ -364,6 +407,7 @@ admin.add_view(AssetView(Asset, db.session))
 admin.add_view(FailureView(Failure, db.session))
 admin.add_view(RepairView(Repair, db.session))
 admin.add_view(PMView(PM, db.session))
+admin.add_view(CalView(Calibration, db.session))
 
 if __name__ == '__main__':
     db.init_app(app)

@@ -11,7 +11,7 @@
                <thead>
                <tr>
                    <td>Serial Number</td>
-                   <td>Category</td>
+                   <td>Description</td>
                    <td>PM Due</td>
                </tr>
                </thead>
@@ -20,7 +20,7 @@
                 <tr>
                     <td><a href="{{ url_for('pm', id=asset.id) }}">{{ asset.serial_number }}</a></td>
                     <td>{{ asset.description }}</td>
-                    <td>{{ asset.next_pm }}</td>
+                    <td>{{ asset.next_pm.strftime('%Y-%m-%d') }}</td>
                 </tr>
                 {% endfor %}
                </tbody>
@@ -37,7 +37,7 @@
                 <thead>
                 <tr>
                     <th>Serial Number</th>
-                    <th>Category</th>
+                    <th>Description</th>
                     <th>Date</th>
                     <th>Reported By</th>
                 </tr>
@@ -46,8 +46,8 @@
                     {% for failure in failures %}
                     <tr>
                         <td><a href="{{ url_for('failure', id=failure.id) }}">{{ failure. asset.serial_number}}</a></td>
-                        <td>{{ failure.asset.category.description }}</td>
-                        <td>{{ failure.date }}</td>
+                        <td>{{ failure.description }}</td>
+                        <td>{{ failure.date.strftime('%Y-%m-%d') }}</td>
                         <td>{{ failure.reported_by }}</td>
 
                     </tr>

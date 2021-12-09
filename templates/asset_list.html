@@ -7,6 +7,7 @@
         <table class="table table-bordered">
             <thead>
                 <th>Asset</th>
+                <th>Description</th>
                 <th>PM</th>
                 <th>Failure</th>
             </thead>
@@ -14,6 +15,7 @@
                 {% for item in query %}
                 <tr>
                     <td class="info"><a href="{{ url_for('asset', id=item.id) }}" >{{ item.serial_number }} </a></td>
+                    <td class="info">{{ item.description }}</tdC>
                     <td class="warning"><a href="{{ url_for('pm', id=item.id) }}" >PM</a></td>
                     <td class="danger"><a href="{{ url_for('failure_report', id=item.id) }}" >Failure</a></td>
                 </tr>

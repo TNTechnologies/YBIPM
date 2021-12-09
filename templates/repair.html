@@ -35,14 +35,14 @@
                     <thead>
                         <tr>
                             <td>Date</td>
-                            <td>Reported Byn</td>
-                            <td>Descriptio</td>
+                            <td>Reported By</td>
+                            <td>Description</td>
                             <td>Notes</td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{{ failure.date }}</td>
+                            <td>{{ failure.date.strftime('%Y-%m-%d %H:%M') }}</td>
                             <td>{{ failure.reported_by }}</td>
                             <td>{{ failure.description }}</td>
                             <td>

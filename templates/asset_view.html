@@ -2,25 +2,39 @@
 
 {% block content%}
    {{ super() }}
-
+<div class="container">
+    <div class="btn-group" role="group">
+        <a href="{{ url_for('pm', id=asset.id) }}" class="btn btn-warning">PM</a>
+        <a href="{{ url_for('failure_report', id=asset.id) }}" class="btn btn-danger">Failure</a>
+        {% if asset.category.calibration_required %}
+        <a href="{{ url_for('calibrate', id=asset.id) }}" class="btn btn-info">Calibration</a>
+        {% endif %}
+    </div>
+</div>
     <div class="container">
-        <div class="panel panel-default panel-info">
+        <div class="panel panel-primary">
             <div class="panel-heading">Info</div>
 
                 <table class="table">
                     <thead>
                         <tr>
                             <td>Serial Number</td>
-                            <td>Category</td>
+                            <td>Description</td>
                             <td>Next PM</td>
+                            {% if asset.category.calibration_required %}
+                            <td>Next Calibration</td>
+                            {% endif %}
                             <td>Notes</td>
                          </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>{{ asset.serial_number }}</td>
-                            <td>{{ asset.category.description }}</td>
-                            <td>{{ asset.next_pm }}</td>
+                            <td>{{ asset.description }}</td>
+                            <td>{{ asset.next_pm.strftime('%Y-%m-%d') }}</td>
+                            {% if asset.category.calibration_required %}
+                            <td>{{ asset.next_cal.strftime('%Y-%m-%d') }}</td>
+                            {% endif %}
                             <td>{{ asset.notes }}</td>
                         </tr>
 
@@ -45,7 +59,7 @@
                     </thead>
                     <tbody>{%  for failure in failures %}
                         <tr>
-                            <td><a href="{{ url_for('failure', id=failure.id) }}">{{ failure.date }}</a></td>
+                            <td><a href="{{ url_for('failure', id=failure.id) }}">{{ failure.date.strftime('%Y-%m-%d %H:%M') }}</a></td>
                             <td>{{ failure.description }}</td>
                             <td>{{ failure.reported_by }}</td>
                             <td>
@@ -76,7 +90,7 @@
                     </thead>
                     <tbody>{%  for repair in repairs %}
                         <tr>
-                            <td><a href="{{ url_for('repair', id=repair.id) }}">{{ repair.date }}</a></td>
+                            <td><a href="{{ url_for('repair', id=repair.id) }}">{{ repair.date.strftime('%Y-%m-%d %H:%M')  }}</a></td>
                             <td>{{ repair.description }}</td>
                             <td>{{ repair.repaired_by }}</td>
                             <td>
@@ -107,7 +121,7 @@
                     </thead>
                     <tbody>{%  for pm in pms %}
                         <tr>
-                            <td>{{ pm.date }}</td>
+                            <td>{{ pm.date.strftime('%Y-%m-%d %H:%M')  }}</td>
                             <td>{{ pm.description }}</td>
                             <td>{{ pm.notes }}</td>
                             <td>{{ pm.performed_by }}</td>
@@ -119,7 +133,36 @@
                     </tbody>
                 </table>
             </div>
-        {% endif %}
-
+    {% endif %}
     </div>
+
+          <div class="container">
+        {%  if cals %}
+            <div class="panel panel-info">
+            <div class="panel-heading">Calibration's</div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Date</td>
+                            <td>Description</td>
+                            <td>Values</td>
+                            <td>Performed By</td>
+                        </tr>
+                    </thead>
+                    <tbody>{%  for cal in cals %}
+                        <tr>
+                            <td>{{ cal.date.strftime('%Y-%m-%d %H:%M')  }}</td>
+                            <td>{{ cal.description }}</td>
+                            <td>{{ cal.values }}</td>
+                            <td>{{ cal.performed_by }}</td>
+                            <td>
+                            </td>
+                        </tr>
+
+                      {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+          </div>
 {% endblock %}

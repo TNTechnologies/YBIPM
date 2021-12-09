@@ -20,7 +20,7 @@
             <tr>
                 <td> {{ asset.serial_number }}</td>
                 <td>{{ asset.category.description }}</td>
-                <td>{{ asset.next_pm }}</td>
+                <td>{{ asset.next_pm.strftime('%Y-%m-%d') }}</td>
             </tr>
             </tbody>
         </table>
@@ -29,6 +29,7 @@
 
     </div>
         <form  method="post">
+
             {{ form.csrf_token }}
             <div class="container col-lg-12">
                 <div class="form-group">{{ form.description.label }}</div>

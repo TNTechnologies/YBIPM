@@ -19,7 +19,7 @@
                         <tr>
                             <td>{{ asset.serial_number }}</td>
                             <td>{{ asset.category.description }}</td>
-                            <td>{{ asset.next_pm }}</td>
+                            <td>{{ asset.next_pm.strftime('%Y-%m-%d') }}</td>
                             <td>{{ asset.notes }}</td>
                         </tr>
 

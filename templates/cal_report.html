@@ -3,24 +3,24 @@
 {% block content%}
 {{ super() }}
     <div class="container">
-    <div class="panel panel-warning">
+    <div class="panel panel-info">
         <div class="panel-heading">Info</div>
         <div class="panel-body">
-            <p>{{ asset.category.pm_procedure }}</p>
+            <p>Calibration</p>
         </div>
         <table class="table">
             <thead>
             <tr>
                 <th>Serial Number</th>
                 <th>Description</th>
-                <th>PM Due</th>
+                <th>Calibration Due</th>
             </tr>
             </thead>
             <tbody>
             <tr>
                 <td>{{ asset.serial_number }}</td>
                 <td>{{ asset.category.description }}</td>
-                <td>{{ asset.next_pm.strftime('%Y-%m-%d') }}</td>
+                <td>{{ asset.next_cal.strftime('%Y-%m-%d') }}</td>
             </tr>
 
             </tbody>
@@ -35,8 +35,8 @@
         <div class="container col-lg-12">
             <div class="form-group">{{ form.description.label }}</div>
             <div class="form-group">{{ form.description(class_='form-group form-control') }}</div>
-            <div class="form-group">{{ form.notes.label }}</div>
-            <div class="form-group">{{ form.notes(class_='form-group form-control', rows='10') }}</div>
+            <div class="form-group">{{ form.values.label }}</div>
+            <div class="form-group">{{ form.values(class_='form-group form-control', rows='10') }}</div>
             <div class="form-group">{{ form.submit(class_='btn btn-primary') }}</div>
         </div>
 
