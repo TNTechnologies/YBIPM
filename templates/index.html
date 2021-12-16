@@ -78,7 +78,7 @@
                     <tr>
                         <td><a href="{{ url_for('failure', id=failure.id) }}">{{ failure. asset.serial_number}}</a></td>
                         <td>{{ failure.description }}</td>
-                        <td>{{ failure.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ failure.date.strftime('%Y-%m-%d %H:%M') }}</td>
                         <td>{{ failure.reported_by }}</td>
 
                     </tr>

@@ -268,7 +268,7 @@ class Category(db.Model):
     pm_interval = db.Column(db.Integer, default=0)
     cal_interval = db.Column(db.Integer, default=0)
     assets = db.relationship("Asset", backref='category')
-    pm_procedure = db.Column(db.Text(1024))
+    pm_procedure = db.Column(db.Text(4096))
     calibration_required = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
